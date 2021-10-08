@@ -1,5 +1,8 @@
 # go-daemon
 
+[![GoDoc](https://godoc.org/github.com/wujie1993/go-daemon?status.svg)](https://godoc.org/github.com/wujie1993/go-daemon)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wujie1993/go-daemon)](https://goreportcard.com/report/github.com/wujie1993/go-daemon)
+
 ## Examples
 
 ```
@@ -57,6 +60,8 @@ func main() {
 ### Example 1: Graceful Terminate
 
 set `TermTimeA = 3` and `TermTimeB = 4`
+
+send terminate signal once
 
 **outputs**
 
