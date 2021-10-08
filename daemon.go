@@ -65,7 +65,7 @@ func (d *Daemon) waitExit() {
 	for {
 		select {
 		case <-c:
-			log.Println("Daemon has graceful exit.")
+			log.Println("Daemon exit.")
 			return
 		case killSignal := <-d.interrupt:
 			if killSignal == os.Interrupt {
