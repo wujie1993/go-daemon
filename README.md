@@ -3,7 +3,13 @@
 [![GoDoc](https://godoc.org/github.com/wujie1993/go-daemon?status.svg)](https://godoc.org/github.com/wujie1993/go-daemon)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wujie1993/go-daemon)](https://goreportcard.com/report/github.com/wujie1993/go-daemon)
 
-## Examples
+## Installation
+
+```
+go get github.com/wujie1993/go-daemon
+```
+
+## Usage
 
 ```
 package main
