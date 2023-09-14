@@ -2,7 +2,6 @@ package daemon
 
 import (
 	"context"
-	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -20,11 +19,13 @@ type Daemon struct {
 	interrupt               chan os.Signal
 	cancels                 map[string]context.CancelFunc
 	cancelsMutex            sync.RWMutex
+	log                     Logger
 }
 
 type DaemonConfig struct {
 	Ctx                     context.Context
 	GracefulExitWaitSeconds time.Duration
+	Log                     Logger
 }
 
 func (d *Daemon) Run(name string, run DaemonRunFunc) {
@@ -73,12 +74,12 @@ func (d *Daemon) WaitSignal() {
 	for {
 		select {
 		case <-d.ctx.Done():
-			log.Println("There is no running routines.")
+			d.log.Warn("There is no running routines.")
 			return
 		case killSignal := <-d.interrupt:
-			log.Printf("Got signal: %s.\n", killSignal)
+			d.log.Warnf("Got signal: %s.\n", killSignal)
 			if killSignal == os.Interrupt {
-				log.Printf("Waiting %d seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.\n", d.gracefulExitWaitSeconds)
+				d.log.Warnf("Waiting %d seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.\n", d.gracefulExitWaitSeconds)
 				d.cancel()
 				return
 			}
@@ -95,15 +96,15 @@ func (d *Daemon) waitExit() {
 	for {
 		select {
 		case <-c:
-			log.Println("Daemon exit.")
+			d.log.Info("Daemon exit.")
 			return
 		case killSignal := <-d.interrupt:
 			if killSignal == os.Interrupt {
-				log.Println("Manually forced exit.")
+				d.log.Warn("Manually forced exit.")
 				return
 			}
 		case <-time.After(time.Duration(d.gracefulExitWaitSeconds * time.Second)):
-			log.Println("Timeout waiting for graceful exit, perform forced exit.")
+			d.log.Error("Timeout waiting for graceful exit, perform forced exit.")
 			return
 		}
 	}
@@ -116,11 +117,15 @@ func NewDaemon(config DaemonConfig) *Daemon {
 	if config.GracefulExitWaitSeconds <= 0 {
 		config.GracefulExitWaitSeconds = 5
 	}
+	if config.Log == nil {
+		config.Log = DefaultLog{}
+	}
 	ctx, cancel := context.WithCancel(config.Ctx)
 	return &Daemon{
 		ctx:                     ctx,
 		cancel:                  cancel,
 		gracefulExitWaitSeconds: config.GracefulExitWaitSeconds,
 		cancels:                 make(map[string]context.CancelFunc),
+		log:                     config.Log,
 	}
 }

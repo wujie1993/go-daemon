@@ -10,7 +10,7 @@ import (
 
 var (
 	TermTimeA = 3
-	TermTimeB = 4
+	TermTimeB = 7
 )
 
 func routineA(ctx context.Context) {
@@ -51,17 +51,17 @@ func main() {
 	d.Run("routine A", routineA)
 	d.Run("routine B", routineB)
 
-	go func() {
-		// kill routine A after 1s
-		time.Sleep(time.Second)
-		d.Kill("routine A")
-	}()
+	//go func() {
+	//	// kill routine A after 1s
+	//	time.Sleep(time.Second)
+	//	d.Kill("routine A")
+	//}()
 
-	go func() {
-		// kill routine B after 2s
-		time.Sleep(time.Second)
-		d.Kill("routine B")
-	}()
+	//go func() {
+	//	// kill routine B after 2s
+	//	time.Sleep(time.Second)
+	//	d.Kill("routine B")
+	//}()
 
 	// wait until all routines stop
 	d.WaitSignal()

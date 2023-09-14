@@ -69,27 +69,7 @@ func main() {
 }
 ```
 
-### Example 1: Graceful Terminate
-
-set `TermTimeA = 3` and `TermTimeB = 4`
-
-send terminate signal once when running process
-
-**outputs**
-
-```
-2021/10/08 22:13:30 routine B loop
-2021/10/08 22:13:30 routine A loop
-^C2021/10/08 22:13:30 Got signal: interrupt.
-2021/10/08 22:13:30 Waiting 5 seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.
-2021/10/08 22:13:34 routine A terminated in 3 seconds
-2021/10/08 22:13:35 routine B terminated in 4 seconds
-2021/10/08 22:13:35 Daemon exit.
-
-shell returned 1
-```
-
-### Example 2: Automatically Forced Terminate
+### Example 1: Graceful Terminate With Timeout
 
 set `TermTimeA = 3` and `TermTimeB = 7`
 
@@ -98,17 +78,19 @@ send terminate signal once when running process
 **outputs**
 
 ```
-2021/10/08 22:17:52 routine B loop
-2021/10/08 22:17:52 routine A loop
-^C2021/10/08 22:17:53 Got signal: interrupt.
-2021/10/08 22:17:53 Waiting 5 seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.
-2021/10/08 22:17:56 routine A terminated in 3 seconds
-2021/10/08 22:17:58 Timeout waiting for graceful exit, perform forced exit.
+2023/09/14 15:01:55 routine A loop
+2023/09/14 15:01:55 routine B loop
+^C2023/09/14 15:01:56 [warn] Got signal: interrupt.
+2023/09/14 15:01:56 [warn] Waiting 5 seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.
+2023/09/14 15:01:56 routine A will stop in 3 seconds
+2023/09/14 15:01:56 routine B will stop in 7 seconds
+2023/09/14 15:01:59 routine A stopped
+2023/09/14 15:02:01 [error] Timeout waiting for graceful exit, perform forced exit.
 
 shell returned 1
 ```
 
-### Example 3: Manually Forced Terminate
+### Example 2: Manually Forced Terminate
 
 set `TermTimeA = 3` and `TermTimeB = 7`
 
@@ -117,11 +99,13 @@ send terminate signal twice when running process
 **outputs**
 
 ```
-2021/10/08 22:25:09 routine A loop
-2021/10/08 22:25:09 routine B loop
-^C2021/10/08 22:25:09 Got signal: interrupt.
-2021/10/08 22:25:09 Waiting 5 seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.
-^C2021/10/08 22:25:09 Manually forced exit.
+2023/09/14 15:03:02 routine A loop
+2023/09/14 15:03:02 routine B loop
+^C2023/09/14 15:03:03 [warn] Got signal: interrupt.
+2023/09/14 15:03:03 [warn] Waiting 5 seconds for graceful terminate. You can pass interrupt signal again to forced exit daemon.
+2023/09/14 15:03:03 routine A will stop in 3 seconds
+2023/09/14 15:03:03 routine B will stop in 7 seconds
+^C2023/09/14 15:03:04 [warn] Manually forced exit.
 
 shell returned 1
 ```
