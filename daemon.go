@@ -18,15 +18,45 @@ type Daemon struct {
 	wg                      sync.WaitGroup
 	gracefulExitWaitSeconds time.Duration
 	interrupt               chan os.Signal
+	cancels                 map[string]context.CancelFunc
+	cancelsMutex            sync.RWMutex
 }
 
-func (d *Daemon) Run(run DaemonRunFunc) {
-	go func() {
-		d.wg.Add(1)
-		defer d.wg.Done()
+type DaemonConfig struct {
+	Ctx                     context.Context
+	GracefulExitWaitSeconds time.Duration
+}
 
-		run(d.ctx)
+func (d *Daemon) Run(name string, run DaemonRunFunc) {
+	ctx, cancel := context.WithCancel(d.ctx)
+
+	d.cancelsMutex.Lock()
+	d.cancels[name] = cancel
+	d.cancelsMutex.Unlock()
+
+	d.wg.Add(1)
+
+	go func() {
+		defer func() {
+			d.cancelsMutex.Lock()
+			delete(d.cancels, name)
+			d.cancelsMutex.Unlock()
+
+			d.wg.Done()
+		}()
+
+		run(ctx)
 	}()
+}
+
+func (d *Daemon) Kill(name string) {
+	d.cancelsMutex.RLock()
+	cancel, ok := d.cancels[name]
+	d.cancelsMutex.RUnlock()
+	if !ok {
+		return
+	}
+	cancel()
 }
 
 func (d *Daemon) WaitSignal() {
@@ -79,11 +109,18 @@ func (d *Daemon) waitExit() {
 	}
 }
 
-func NewDaemon(ctx context.Context) *Daemon {
-	ctx, cancel := context.WithCancel(context.Background())
+func NewDaemon(config DaemonConfig) *Daemon {
+	if config.Ctx == nil {
+		config.Ctx = context.Background()
+	}
+	if config.GracefulExitWaitSeconds <= 0 {
+		config.GracefulExitWaitSeconds = 5
+	}
+	ctx, cancel := context.WithCancel(config.Ctx)
 	return &Daemon{
 		ctx:                     ctx,
 		cancel:                  cancel,
-		gracefulExitWaitSeconds: 5,
+		gracefulExitWaitSeconds: config.GracefulExitWaitSeconds,
+		cancels:                 make(map[string]context.CancelFunc),
 	}
 }

@@ -23,16 +23,17 @@ import (
 )
 
 var (
-	TermTimeA int
-	TermTimeB int
+	TermTimeA = 3
+	TermTimeB = 4
 )
 
 func routineA(ctx context.Context) {
+	defer log.Println("routine A stopped")
 	for {
 		select {
 		case <-ctx.Done():
+			log.Printf("routine A will stop in %d seconds\n", TermTimeA)
 			time.Sleep(time.Second * time.Duration(TermTimeA))
-			log.Printf("routine A terminated in %d seconds\n", TermTimeA)
 			return
 		default:
 			log.Println("routine A loop")
@@ -42,11 +43,12 @@ func routineA(ctx context.Context) {
 }
 
 func routineB(ctx context.Context) {
+	defer log.Println("routine B stopped")
 	for {
 		select {
 		case <-ctx.Done():
+			log.Printf("routine B will stop in %d seconds\n", TermTimeB)
 			time.Sleep(time.Second * time.Duration(TermTimeB))
-			log.Printf("routine B terminated in %d seconds\n", TermTimeB)
 			return
 		default:
 			log.Println("routine B loop")
@@ -56,9 +58,13 @@ func routineB(ctx context.Context) {
 }
 
 func main() {
-	d := daemon.NewDaemon(context.Background())
-	d.Run(routineA)
-	d.Run(routineB)
+	d := daemon.NewDaemon(daemon.DaemonConfig{
+		Ctx:                     context.Background(),
+		GracefulExitWaitSeconds: 5,
+	})
+	d.Run("routine A", routineA)
+	d.Run("routine B", routineB)
+
 	d.WaitSignal()
 }
 ```
@@ -67,7 +73,7 @@ func main() {
 
 set `TermTimeA = 3` and `TermTimeB = 4`
 
-send terminate signal once
+send terminate signal once when running process
 
 **outputs**
 
@@ -87,7 +93,7 @@ shell returned 1
 
 set `TermTimeA = 3` and `TermTimeB = 7`
 
-send terminate signal once
+send terminate signal once when running process
 
 **outputs**
 
@@ -106,7 +112,7 @@ shell returned 1
 
 set `TermTimeA = 3` and `TermTimeB = 7`
 
-send terminate signal twice
+send terminate signal twice when running process
 
 **outputs**
 
