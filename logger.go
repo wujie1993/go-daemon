@@ -29,7 +29,7 @@ func (l DefaultLog) Tracef(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Trace(args ...interface{}) {
-	log.Print(append([]interface{}{"[trace]"}, args...))
+	log.Print(append([]interface{}{"[trace] "}, args...)...)
 }
 
 func (l DefaultLog) Debugf(format string, args ...interface{}) {
@@ -37,7 +37,7 @@ func (l DefaultLog) Debugf(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Debug(args ...interface{}) {
-	log.Print(append([]interface{}{"[debug]"}, args...))
+	log.Print(append([]interface{}{"[debug] "}, args...)...)
 }
 
 func (l DefaultLog) Infof(format string, args ...interface{}) {
@@ -45,7 +45,7 @@ func (l DefaultLog) Infof(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Info(args ...interface{}) {
-	log.Print(append([]interface{}{"[info]"}, args...))
+	log.Print(append([]interface{}{"[info] "}, args...)...)
 }
 
 func (l DefaultLog) Warnf(format string, args ...interface{}) {
@@ -53,7 +53,7 @@ func (l DefaultLog) Warnf(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Warn(args ...interface{}) {
-	log.Print(append([]interface{}{"[warn]"}, args...))
+	log.Print(append([]interface{}{"[warn] "}, args...)...)
 }
 
 func (l DefaultLog) Errorf(format string, args ...interface{}) {
@@ -61,7 +61,7 @@ func (l DefaultLog) Errorf(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Error(args ...interface{}) {
-	log.Print(append([]interface{}{"[error]"}, args...))
+	log.Print(append([]interface{}{"[error] "}, args...)...)
 }
 
 func (l DefaultLog) Fatalf(format string, args ...interface{}) {
@@ -69,5 +69,5 @@ func (l DefaultLog) Fatalf(format string, args ...interface{}) {
 }
 
 func (l DefaultLog) Fatal(args ...interface{}) {
-	log.Print(append([]interface{}{"[fatal]"}, args...))
+	log.Print(append([]interface{}{"[fatal] "}, args...)...)
 }
